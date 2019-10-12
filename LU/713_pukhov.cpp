@@ -1,9 +1,15 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include <cmath>
 #include <cassert>
 #include <limits>
+
+double my_abs(double x)
+{
+	if (x > 0)
+		return x;
+	return -x;
+}
 
 struct Vector {
 	double *buf;
@@ -30,12 +36,12 @@ struct Vector {
 		delete[] buf;
 	}
 
-	double euc_norm() const
+	double L1_norm() const
 	{
 		double accum = 0;
 		for (std::size_t i = 0; i < max; i++)
-			accum += buf[i] * buf[i];
-		return std::sqrt(accum);
+			accum += my_abs(buf[i]);
+		return accum;
 	}
 
 	void print() const
@@ -106,8 +112,8 @@ Matrix get_lu_decomp(Matrix const &mat)
 				if (j == k)
 					lu_mat[j][i] -= lu_mat[k][i];
 				else
-					lu_mat[j][i] -= lu_mat[j][k] *
-							lu_mat[k][i];
+					lu_mat[j][i] -=
+						lu_mat[j][k] * lu_mat[k][i];
 			}
 
 			lu_mat[j][i] /= lu_mat[i][i];
@@ -181,6 +187,7 @@ int main(int argc, char *argv[])
 {
 	if (argc != 2) {
 		std::cout << "Missing matrix filename" << std::endl;
+		return EXIT_FAILURE;
 	}
 
 	Matrix mat = import_sqmat(argv[1]);
@@ -195,7 +202,7 @@ int main(int argc, char *argv[])
 
 	Vector vec_delta = vec_y - vec_x;
 	std::cout.precision(std::numeric_limits<double>::digits10 + 1);
-	std::cout << vec_delta.euc_norm() << std::endl;
+	std::cout << vec_delta.L1_norm() << std::endl;
 
 	return EXIT_SUCCESS;
 }
