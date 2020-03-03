@@ -41,7 +41,7 @@ struct Matrix {
 
 	Matrix(size_t _sizex, size_t _sizey)
 	{ buf = new double[(sizex = _sizex) * (sizey = _sizey)]; }
-	
+
 	~Matrix() { delete[] buf; }
 
 	void import(std::ifstream &file)
